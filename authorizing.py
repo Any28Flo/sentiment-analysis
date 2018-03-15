@@ -1,4 +1,6 @@
 import tweepy
+#Import csv
+import csv
 from textblob import TextBlob
 
 # XXX: Go to http://dev.twitter.com/apps/new to create an app and get values
@@ -17,10 +19,19 @@ auth = tweepy.OAuthHandler(consumer_key,consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
+# Open/create a file to append data to
+csvFile = open('result.csv', 'a')
 
-public_tweets = api.search('Messi')
+#Use csv writer
+csvWriter = csv.writer(csvFile)
 
-for tweet in public_tweets:
-    print(tweet.text)
-    analysis = TextBlob(tweet.text)
-    print(analysis.sentiment)
+for tweet in tweepy.Cursor(api.search,
+                           q = "Messi",
+                           since = "2018-03-13",
+                           until = "2018-03-14",
+                           lang = "en").items():
+
+    # Write a row to the CSV file. I use encode UTF-8
+    csvWriter.writerow([tweet.created_at, tweet.text.encode('utf-8')])
+    print (tweet.created_at, tweet.text)
+csvFile.close()
