@@ -1,4 +1,5 @@
-import twitter
+import tweepy
+from textblob import TextBlob
 
 # XXX: Go to http://dev.twitter.com/apps/new to create an app and get values
 # for these credentials, which you'll need to provide in place of these
@@ -6,17 +7,20 @@ import twitter
 # See https://dev.twitter.com/docs/auth/oauth for more information 
 # on Twitter's OAuth implementation.
 
-CONSUMER_KEY = ''
-CONSUMER_SECRET = ''
-OAUTH_TOKEN = ''
-OAUTH_TOKEN_SECRET = ''
+consumer_key = ''
+consumer_secret = ''
 
-auth = twitter.oauth.OAuth(OAUTH_TOKEN, OAUTH_TOKEN_SECRET,
-                           CONSUMER_KEY, CONSUMER_SECRET)
+access_token = ''
+access_token_secret = ''
 
-twitter_api = twitter.Twitter(auth=auth)
+auth = tweepy.OAuthHandler(consumer_key,consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
 
-# Nothing to see by displaying twitter_api except that it's now a
-# defined variable
+api = tweepy.API(auth)
 
-print twitter_api
+public_tweets = api.search('Messi')
+
+for tweet in public_tweets:
+    print(tweet.text)
+    analysis = TextBlob(tweet.text)
+    print(analysis.sentiment)
